@@ -1,22 +1,13 @@
 plugins {
     id 'org.jetbrains.kotlin.multiplatform'
-    id 'com.android.library'
 }
 
 group = 'com.badoo.reaktive'
 version = '0.0.1'
 
-android {
-    compileSdkVersion 28
-    defaultConfig {
-        minSdkVersion 15
-    }
-}
-
 kotlin {
     targets {
         fromPreset(presets.jvm, 'jvm')
-        fromPreset(presets.android, 'android')
     }
 
     sourceSets {
@@ -40,13 +31,32 @@ kotlin {
                 implementation 'org.jetbrains.kotlin:kotlin-stdlib'
             }
         }
-        
+
         jvmMain {
             dependsOn jvmCommon
         }
+    }
+}
 
-        androidMain {
-            dependsOn jvmCommon
+if (System.getenv('HOST') != 'travis-osx') {
+    apply plugin: 'com.android.library'
+
+    android {
+        compileSdkVersion 28
+        defaultConfig {
+            minSdkVersion 15
+        }
+    }
+
+    kotlin {
+        targets {
+            fromPreset(presets.android, 'android')
+        }
+
+        sourceSets {
+            androidMain {
+                dependsOn jvmCommon
+            }
         }
     }
 }
