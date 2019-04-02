@@ -2,14 +2,12 @@ plugins {
     id 'org.jetbrains.kotlin.multiplatform'
 }
 
+apply from: '../environment.gradle'
+
 group = 'com.badoo.reaktive'
 version = '0.0.1'
 
 kotlin {
-    targets {
-        fromPreset(presets.jvm, 'jvm')
-    }
-
     sourceSets {
         commonMain {
             dependencies {
@@ -25,20 +23,38 @@ kotlin {
                 implementation 'org.jetbrains.kotlin:kotlin-test-annotations-common'
             }
         }
+    }
+}
 
-        jvmCommon {
-            dependencies {
-                implementation 'org.jetbrains.kotlin:kotlin-stdlib'
-            }
+if (currentEnvironment().includeJvmCommon) {
+    kotlin {
+        targets {
+            fromPreset(presets.jvm, 'jvm')
         }
-
-        jvmMain {
-            dependsOn jvmCommon
+        sourceSets {
+            jvmCommon {
+                dependencies {
+                    implementation 'org.jetbrains.kotlin:kotlin-stdlib'
+                }
+            }
         }
     }
 }
 
-if (System.getenv('HOST') != 'travis-osx') {
+if (currentEnvironment().includeJvm) {
+    kotlin {
+        targets {
+            fromPreset(presets.jvm, 'jvm')
+        }
+        sourceSets {
+            jvmMain {
+                dependsOn jvmCommon
+            }
+        }
+    }
+}
+
+if (currentEnvironment().includeAndroid) {
     apply plugin: 'com.android.library'
 
     android {

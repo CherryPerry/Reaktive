@@ -16,10 +16,13 @@ pluginManagement {
     }
 }
 
+apply from: 'environment.gradle'
+println("Current environment: " + currentEnvironment().toString())
+
 enableFeaturePreview('GRADLE_METADATA')
 
 include ':library'
-if (System.getenv('HOST') != 'travis-osx') {
+if (currentEnvironment().includeAndroid) {
     include ':android-sample-app'
 }
 include ':rxjava2-interop'

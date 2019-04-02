@@ -1,0 +1,28 @@
+enum Environment {
+    REGULAR(true, true, true),
+    CI_ANDROID(true, false, false),
+    CI_OSX(false, true, false),
+    CI_LINUX(false, false, true),
+
+    final boolean includeAndroid
+    final boolean includeOsx
+    final boolean includeJvm
+    final boolean includeJvmCommon
+
+    Environment(boolean android, boolean osx, boolean jvm) {
+        includeAndroid = android
+        includeOsx = osx
+        includeJvm = jvm
+        includeJvmCommon = includeAndroid || includeJvm
+    }
+}
+
+ext.currentEnvironment = { ->
+    final value = System.getenv('HOST')
+    final environment = Environment.values().find { it.name().equalsIgnoreCase(value) }
+    if (environment != null) {
+        return environment
+    } else {
+        return Environment.REGULAR
+    }
+}
