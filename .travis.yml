@@ -1,9 +1,16 @@
-language: android
-android:
-  components:
-    - build-tools-28.0.3
-    - android-28
-os: osx
+matrix:
+  include:
+    - os: linux
+      language: android
+      android:
+        components:
+          - build-tools-28.0.3
+          - android-28
+      env: HOST=travis-linux
+    - os: osx
+      language: java
+      env: HOST=travis-osx
+
 before_cache:
   - rm -f  $HOME/.gradle/caches/modules-2/modules-2.lock
   - rm -fr $HOME/.gradle/caches/*/plugin-resolution/
