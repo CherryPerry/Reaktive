@@ -19,6 +19,6 @@ cache:
     - $HOME/.gradle/caches/
     - $HOME/.gradle/wrapper/
 install:
-  - ./gradlew library:assemble
+  - ./gradlew library:assemble -DMP_TARGET=$MP_TARGET
 script:
-  - ./gradlew library:check
+  - ./gradlew library:check -DMP_TARGET=$MP_TARGET
