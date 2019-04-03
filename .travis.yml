@@ -6,13 +6,10 @@ matrix:
         components:
           - build-tools-28.0.3
           - android-28
-      env: HOST=CI_ANDROID
+      env: MP_TARGET=ANDROID
     - os: osx
       language: java
-      env: HOST=CI_OSX
-    - os: linux
-      language: java
-      env: HOST=CI_LINUX
+      env: MP_TARGET=OSX
 
 before_cache:
   - rm -f  $HOME/.gradle/caches/modules-2/modules-2.lock

@@ -8,6 +8,9 @@ group = 'com.badoo.reaktive'
 version = '0.0.1'
 
 kotlin {
+    targets {
+        fromPreset(presets.jvm, 'jvm')
+    }
     sourceSets {
         commonMain {
             dependencies {
@@ -23,38 +26,21 @@ kotlin {
                 implementation 'org.jetbrains.kotlin:kotlin-test-annotations-common'
             }
         }
-    }
-}
 
-if (currentEnvironment().includeJvmCommon) {
-    kotlin {
-        targets {
-            fromPreset(presets.jvm, 'jvm')
-        }
-        sourceSets {
-            jvmCommon {
-                dependencies {
-                    implementation 'org.jetbrains.kotlin:kotlin-stdlib'
-                }
+        jvmCommon {
+            dependencies {
+                implementation 'org.jetbrains.kotlin:kotlin-stdlib'
             }
         }
-    }
-}
 
-if (currentEnvironment().includeJvm) {
-    kotlin {
-        targets {
-            fromPreset(presets.jvm, 'jvm')
-        }
-        sourceSets {
-            jvmMain {
-                dependsOn jvmCommon
-            }
+        jvmMain {
+            dependsOn jvmCommon
         }
     }
 }
 
-if (currentEnvironment().includeAndroid) {
+if (currentEnvironment().android) {
+
     apply plugin: 'com.android.library'
 
     android {
@@ -68,7 +54,6 @@ if (currentEnvironment().includeAndroid) {
         targets {
             fromPreset(presets.android, 'android')
         }
-
         sourceSets {
             androidMain {
                 dependsOn jvmCommon

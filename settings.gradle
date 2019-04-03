@@ -22,7 +22,7 @@ println("Current environment: " + currentEnvironment().toString())
 enableFeaturePreview('GRADLE_METADATA')
 
 include ':library'
-if (currentEnvironment().includeAndroid) {
+if (currentEnvironment().android) {
     include ':android-sample-app'
 }
 include ':rxjava2-interop'
