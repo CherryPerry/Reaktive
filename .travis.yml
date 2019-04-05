@@ -14,19 +14,19 @@ matrix:
       language: java
       env: MP_TARGET=OSX
       install: true
-      script: ./gradlew library:ios32Binaries -DMP_TARGET=$MP_TARGET
+      script: ./gradlew library:ios32MainBinaries -DMP_TARGET=$MP_TARGET
     - os: osx
       osx_image: xcode10.2
       language: java
       env: MP_TARGET=OSX
       install: true
-      script: ./gradlew library:ios64Binaries -DMP_TARGET=$MP_TARGET
+      script: ./gradlew library:ios64MainBinaries -DMP_TARGET=$MP_TARGET
     - os: osx
       osx_image: xcode10.2
       language: java
       env: MP_TARGET=OSX
       install: true
-      script: ./gradlew library:iosSimBinaries -DMP_TARGET=$MP_TARGET
+      script: ./gradlew library:iosSimMainBinaries -DMP_TARGET=$MP_TARGET
 
 before_cache:
   - rm -f  $HOME/.gradle/caches/modules-2/modules-2.lock
