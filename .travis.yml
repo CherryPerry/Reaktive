@@ -7,10 +7,26 @@ matrix:
           - build-tools-28.0.3
           - android-28
       env: MP_TARGET=ANDROID
+      install: true
+      script: ./gradlew library:check -DMP_TARGET=$MP_TARGET
     - os: osx
       osx_image: xcode10.2
       language: java
       env: MP_TARGET=OSX
+      install: true
+      script: ./gradlew library:ios32Binaries -DMP_TARGET=$MP_TARGET
+    - os: osx
+      osx_image: xcode10.2
+      language: java
+      env: MP_TARGET=OSX
+      install: true
+      script: ./gradlew library:ios64Binaries -DMP_TARGET=$MP_TARGET
+    - os: osx
+      osx_image: xcode10.2
+      language: java
+      env: MP_TARGET=OSX
+      install: true
+      script: ./gradlew library:iosSimBinaries -DMP_TARGET=$MP_TARGET
 
 before_cache:
   - rm -f  $HOME/.gradle/caches/modules-2/modules-2.lock
@@ -19,7 +35,3 @@ cache:
   directories:
     - $HOME/.gradle/caches/
     - $HOME/.gradle/wrapper/
-install:
-  - ./gradlew library:assemble -DMP_TARGET=$MP_TARGET
-script:
-  - ./gradlew library:check -DMP_TARGET=$MP_TARGET
