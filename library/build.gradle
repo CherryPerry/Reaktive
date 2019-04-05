@@ -80,7 +80,7 @@ if (currentEnvironment().osx) {
         }
         sourceSets {
             iosCommon.dependsOn commonMain
-            iosCommonTest.dependsOn commonMain
+            iosCommonTest.dependsOn iosCommon
 
             ios32Main.dependsOn iosCommon
             ios32Test.dependsOn iosCommonTest
