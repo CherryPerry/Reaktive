@@ -8,6 +8,7 @@ matrix:
           - android-28
       env: MP_TARGET=ANDROID
     - os: osx
+      osx_image: xcode10.2
       language: java
       env: MP_TARGET=OSX
 

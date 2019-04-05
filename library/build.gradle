@@ -30,6 +30,7 @@ kotlin {
         jvmCommon {
             dependencies {
                 implementation 'org.jetbrains.kotlin:kotlin-stdlib'
+                dependsOn commonMain
             }
         }
 
@@ -58,6 +59,37 @@ if (currentEnvironment().android) {
             androidMain {
                 dependsOn jvmCommon
             }
+        }
+    }
+}
+
+if (currentEnvironment().osx) {
+
+    kotlin {
+        targets {
+            presets.each { println(it.name) }
+            fromPreset(presets.iosArm64, 'ios64') {
+                compilations.main.outputKinds('FRAMEWORK')
+            }
+            fromPreset(presets.iosArm32, 'ios32') {
+                compilations.main.outputKinds('FRAMEWORK')
+            }
+            fromPreset(presets.iosX64, 'iosSim') {
+                compilations.main.outputKinds('FRAMEWORK')
+            }
+        }
+        sourceSets {
+            iosCommon.dependsOn commonMain
+            iosCommonTest.dependsOn commonMain
+
+            ios32Main.dependsOn iosCommon
+            ios32Test.dependsOn iosCommonTest
+
+            ios64Main.dependsOn iosCommon
+            ios64Test.dependsOn iosCommonTest
+
+            iosSimMain.dependsOn iosCommon
+            iosSimTest.dependsOn iosCommonTest
         }
     }
 }
