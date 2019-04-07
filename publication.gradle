@@ -1,0 +1,24 @@
+apply from: '../target.gradle'
+final target = currentTarget()
+
+kotlin {
+    final taskConfigurationMap = [
+            'kotlinMultiplatform': target.isJvm(),
+            'metadata'           : target.isJvm(),
+            'jvm'                : target.isJvm(),
+            'androidRelease'     : target.isJvm(),
+            'ios32'              : target.isIos32(),
+            'ios64'              : target.isIos64(),
+            'iosSim'             : target.isIosSim()
+    ]
+    final configurationTargets = taskConfigurationMap.keySet().collect { targets.findByName(it) }.findAll { it != null }
+    configure(configurationTargets) {
+        mavenPublication { activePublication ->
+            tasks.withType(AbstractPublishToMaven).all {
+                onlyIf {
+                    taskConfigurationMap[publication.name]
+                }
+            }
+        }
+    }
+}

@@ -1,23 +1,18 @@
 plugins {
     id 'org.jetbrains.kotlin.multiplatform'
+    id 'maven-publish'
 }
-
-apply from: '../environment.gradle'
 
 group = 'com.badoo.reaktive'
 version = '0.0.1'
 
 kotlin {
-    targets {
-        fromPreset(presets.jvm, 'jvm')
-    }
     sourceSets {
         commonMain {
             dependencies {
                 implementation 'org.jetbrains.kotlin:kotlin-stdlib-common'
             }
         }
-
         commonTest {
             dependencies {
                 implementation 'org.jetbrains.kotlin:kotlin-test'
@@ -26,22 +21,13 @@ kotlin {
                 implementation 'org.jetbrains.kotlin:kotlin-test-annotations-common'
             }
         }
-
-        jvmCommon {
-            dependencies {
-                implementation 'org.jetbrains.kotlin:kotlin-stdlib'
-                dependsOn commonMain
-            }
-        }
-
-        jvmMain {
-            dependsOn jvmCommon
-        }
     }
 }
 
-if (currentEnvironment().android) {
+apply from: '../target.gradle'
+final target = currentTarget()
 
+if (target.isJvm()) {
     apply plugin: 'com.android.library'
 
     android {
@@ -53,43 +39,75 @@ if (currentEnvironment().android) {
 
     kotlin {
         targets {
+            fromPreset(presets.jvm, 'jvm')
             fromPreset(presets.android, 'android')
         }
         sourceSets {
+            jvmCommon {
+                dependencies {
+                    implementation 'org.jetbrains.kotlin:kotlin-stdlib'
+                    dependsOn commonMain
+                }
+            }
+            jvmMain {
+                dependsOn jvmCommon
+            }
             androidMain {
                 dependsOn jvmCommon
             }
         }
+        android {
+            publishLibraryVariants('release')
+        }
     }
 }
 
-if (currentEnvironment().osx) {
-
+if (target.isIos()) {
     kotlin {
-        targets {
-            presets.each { println(it.name) }
-            fromPreset(presets.iosArm64, 'ios64') {
-                compilations.main.outputKinds('FRAMEWORK')
-            }
-            fromPreset(presets.iosArm32, 'ios32') {
-                compilations.main.outputKinds('FRAMEWORK')
-            }
-            fromPreset(presets.iosX64, 'iosSim') {
-                compilations.main.outputKinds('FRAMEWORK')
-            }
-        }
         sourceSets {
             iosCommon.dependsOn commonMain
-            iosCommonTest.dependsOn iosCommon
-
-            ios32Main.dependsOn iosCommon
-            ios32Test.dependsOn iosCommonTest
-
-            ios64Main.dependsOn iosCommon
-            ios64Test.dependsOn iosCommonTest
-
-            iosSimMain.dependsOn iosCommon
-            iosSimTest.dependsOn iosCommonTest
+            iosCommonTest.dependsOn commonMainTest
+        }
+    }
+    if (target.isIos32()) {
+        kotlin {
+            targets {
+                fromPreset(presets.iosArm32, 'ios32') {
+                    compilations.main.outputKinds('framework')
+                }
+            }
+            sourceSets {
+                ios32Main.dependsOn iosCommon
+                ios32Test.dependsOn iosCommonTest
+            }
+        }
+    }
+    if (target.isIos64()) {
+        kotlin {
+            targets {
+                fromPreset(presets.iosArm64, 'ios64') {
+                    compilations.main.outputKinds('framework')
+                }
+            }
+            sourceSets {
+                ios64Main.dependsOn iosCommon
+                ios64Main.dependsOn iosCommonTest
+            }
+        }
+    }
+    if (target.isIosSim()) {
+        kotlin {
+            targets {
+                fromPreset(presets.iosX64, 'iosSim') {
+                    compilations.main.outputKinds('framework')
+                }
+            }
+            sourceSets {
+                iosSimMain.dependsOn iosCommon
+                iosSimMain.dependsOn iosCommonTest
+            }
         }
     }
 }
+
+apply from: '../publication.gradle'
