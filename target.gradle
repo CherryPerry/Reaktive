@@ -3,7 +3,8 @@ enum MpBuildTarget {
     JVM,
     IOS_32,
     IOS_64,
-    IOS_SIM
+    IOS_SIM,
+    META
 
     boolean isJvm() { return this == ALL || this == JVM }
 
@@ -14,6 +15,8 @@ enum MpBuildTarget {
     boolean isIos64() { return this == ALL || this == IOS_64 }
 
     boolean isIosSim() { return this == ALL || this == IOS_SIM }
+
+    boolean isMeta() { return this == META }
 }
 
 ext.currentTarget = { ->

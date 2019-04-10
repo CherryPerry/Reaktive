@@ -27,7 +27,7 @@ kotlin {
 apply from: '../target.gradle'
 final target = currentTarget()
 
-if (target.isJvm()) {
+if (target.isJvm() || target.isMeta()) {
     apply plugin: 'com.android.library'
 
     android {
@@ -62,14 +62,14 @@ if (target.isJvm()) {
     }
 }
 
-if (target.isIos()) {
+if (target.isIos() || target.isMeta()) {
     kotlin {
         sourceSets {
             iosCommon.dependsOn commonMain
             iosCommonTest.dependsOn commonMainTest
         }
     }
-    if (target.isIos32()) {
+    if (target.isIos32() || target.isMeta()) {
         kotlin {
             targets {
                 fromPreset(presets.iosArm32, 'ios32') {
@@ -82,7 +82,7 @@ if (target.isIos()) {
             }
         }
     }
-    if (target.isIos64()) {
+    if (target.isIos64() || target.isMeta()) {
         kotlin {
             targets {
                 fromPreset(presets.iosArm64, 'ios64') {
@@ -95,7 +95,7 @@ if (target.isIos()) {
             }
         }
     }
-    if (target.isIosSim()) {
+    if (target.isIosSim() || target.isMeta()) {
         kotlin {
             targets {
                 fromPreset(presets.iosX64, 'iosSim') {

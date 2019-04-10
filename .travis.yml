@@ -27,6 +27,15 @@ matrix:
       env: MP_TARGET=IOS_SIM
       install: true
       script: ./gradlew library:iosSimMainBinaries -DMP_TARGET=$MP_TARGET
+    - os: linux
+      language: android
+      android:
+        components:
+          - build-tools-28.0.3
+          - android-28
+      env: MP_TARGET=META
+      install: true
+      script: true
 before_cache:
   - rm -f  $HOME/.gradle/caches/modules-2/modules-2.lock
   - rm -fr $HOME/.gradle/caches/*/plugin-resolution/
@@ -37,6 +46,6 @@ cache:
 deploy:
   skip_cleanup: true
   provider: script
-  script: ./gradlew publishToMavenLocal -DMP_TARGET=$MP_TARGET && ls -la ~/.m2/repository/com/badoo/reaktive
+  script: ./gradlew publishToMavenLocal -DMP_TARGET=$MP_TARGET && ls -la ~/.m2/repository/com/badoo/reaktive && find ~/.m2/repository/com/badoo/reaktive -name *.module -exec cat \{\} \;
   on:
     tags: true
