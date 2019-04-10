@@ -3,8 +3,8 @@ plugins {
     id 'maven-publish'
 }
 
-group = 'com.badoo.reaktive'
-version = '0.0.1'
+group = reaktive_group_id
+version = reaktive_version
 
 kotlin {
     sourceSets {
@@ -33,7 +33,7 @@ if (target.isJvm() || target.isMeta()) {
     android {
         compileSdkVersion 28
         defaultConfig {
-            minSdkVersion 15
+            minSdkVersion 1
         }
     }
 
@@ -42,22 +42,25 @@ if (target.isJvm() || target.isMeta()) {
             fromPreset(presets.jvm, 'jvm')
             fromPreset(presets.android, 'android')
         }
+        
         sourceSets {
-            jvmCommon {
+            jvmCommonMain {
                 dependencies {
                     implementation 'org.jetbrains.kotlin:kotlin-stdlib'
-                    dependsOn commonMain
                 }
             }
+            
             jvmMain {
-                dependsOn jvmCommon
+                dependsOn jvmCommonMain
             }
+            
             androidMain {
-                dependsOn jvmCommon
+                dependsOn jvmCommonMain
             }
         }
+        
         android {
-            publishLibraryVariants('release')
+            publishLibraryVariants('release', 'debug')
         }
     }
 }
