@@ -23,7 +23,7 @@ final target = currentTarget()
 println("Current environment: $target")
 
 include ':reaktive'
-include ':rxjava2-interop'
 if (target.isJvm()) {
     include ':android-sample-app'
+    include ':rxjava2-interop'
 }

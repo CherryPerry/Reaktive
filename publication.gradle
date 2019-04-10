@@ -6,6 +6,7 @@ kotlin {
             'kotlinMultiplatform': target.isMeta(),
             'metadata'           : target.isMeta(),
             'jvm'                : target.isJvm(),
+            'androidDebug'       : target.isJvm(),
             'androidRelease'     : target.isJvm(),
             'ios32'              : target.isIos32(),
             'ios64'              : target.isIos64(),
