@@ -46,6 +46,6 @@ cache:
 deploy:
   skip_cleanup: true
   provider: script
-  script: ./gradlew publishToMavenLocal -DMP_TARGET=$MP_TARGET && ls -la ~/.m2/repository/com/badoo/reaktive && find ~/.m2/repository/com/badoo/reaktive -name *.module -exec cat \{\} \;
+  script: ./gradlew publishToMavenLocal -DMP_TARGET=$MP_TARGET && find ~/.m2/repository -name *.module -exec cat \{\} \;
   on:
     tags: true
