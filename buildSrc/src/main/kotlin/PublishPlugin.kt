@@ -15,20 +15,22 @@ import org.gradle.kotlin.dsl.named
 import org.gradle.kotlin.dsl.withType
 import org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension
 import org.jetbrains.kotlin.gradle.plugin.KotlinTarget
+import org.jetbrains.kotlin.gradle.plugin.mpp.KotlinMultiplatformPlugin
 
 abstract class PublishPlugin : Plugin<Project> {
 
     override fun apply(target: Project) {
-        setupPublishingForMultiPlatform(target)
+        val taskConfigurationMap = createConfigurationMap()
+        setupPublishingForMultiPlatform(target, taskConfigurationMap)
         setupBintrayPublishingInformation(target)
-        setupBintrayTaskForKotlinMultiPlatform(target)
+        setupBintrayTaskForKotlinMultiPlatform(target, taskConfigurationMap)
     }
 
-    private fun setupPublishingForMultiPlatform(target: Project) {
+    private fun createConfigurationMap(): Map<String, Boolean> {
         val mppTarget = Target.currentTarget()
-        val taskConfigurationMap = mapOf(
+        return mapOf(
             "kotlinMultiplatform" to mppTarget.meta,
-            "metadata" to mppTarget.meta,
+            KotlinMultiplatformPlugin.METADATA_TARGET_NAME to mppTarget.meta,
             "jvm" to mppTarget.common,
             JsPlugin.TARGET_NAME_JS to mppTarget.common,
             "androidDebug" to mppTarget.common,
@@ -39,6 +41,12 @@ abstract class PublishPlugin : Plugin<Project> {
             IosPlugin.TARGET_NAME_X64 to mppTarget.ios,
             IosPlugin.TARGET_NAME_SIM to mppTarget.ios
         )
+    }
+
+    private fun setupPublishingForMultiPlatform(
+        target: Project,
+        taskConfigurationMap: Map<String, Boolean>
+    ) {
         target.extensions.findByType(KotlinMultiplatformExtension::class)?.apply {
             targets.configureEach { configureMavenPublicationTasksForEnvironment(this, taskConfigurationMap) }
         }
@@ -73,7 +81,10 @@ abstract class PublishPlugin : Plugin<Project> {
         }
     }
 
-    private fun setupBintrayTaskForKotlinMultiPlatform(target: Project) {
+    private fun setupBintrayTaskForKotlinMultiPlatform(
+        target: Project,
+        taskConfigurationMap: Map<String, Boolean>
+    ) {
         target.tasks.named(BintrayUploadTask.getTASK_NAME(), BintrayUploadTask::class) {
             dependsOn(project.tasks.named(MavenPublishPlugin.PUBLISH_LOCAL_LIFECYCLE_TASK_NAME))
             doFirst {
@@ -92,6 +103,7 @@ abstract class PublishPlugin : Plugin<Project> {
                 // https://github.com/bintray/gradle-bintray-plugin/issues/256
                 val publications = publishing.publications
                     .filterIsInstance<MavenPublication>()
+                    .filter { taskConfigurationMap[it.name] == true }
                     .map {
                         logger.warn("Uploading artifact '${it.groupId}:${it.artifactId}:${it.version}' from publication '${it.name}'")
                         it.name
