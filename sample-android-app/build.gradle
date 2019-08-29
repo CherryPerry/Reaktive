@@ -1,6 +1,7 @@
 apply plugin: 'com.android.application'
 apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-android-extensions'
+
 android {
     buildToolsVersion '28.0.3'
     compileSdkVersion 28
@@ -22,6 +23,8 @@ dependencies {
     implementation 'io.reactivex.rxjava2:rxjava'
     implementation 'io.reactivex.rxjava2:rxandroid'
     implementation project(':reaktive')
-    implementation project(':reaktive-test')
+    implementation project(':reaktive-testing')
     implementation project(':rxjava2-interop')
+    implementation project(':sample-mpp-module')
+    implementation 'com.squareup.picasso:picasso:2.71828'
 }
