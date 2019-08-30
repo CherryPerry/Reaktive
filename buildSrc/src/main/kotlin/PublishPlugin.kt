@@ -58,9 +58,7 @@ abstract class PublishPlugin : Plugin<Project> {
     ) {
         kotlinTarget.mavenPublication {
             kotlinTarget.project.tasks.withType(AbstractPublishToMaven::class).configureEach {
-                onlyIf {
-                    taskConfigurationMap[publication.name] == true
-                }
+                enabled = taskConfigurationMap[publication.name] == true
             }
         }
     }
