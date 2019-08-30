@@ -86,6 +86,7 @@ abstract class PublishPlugin : Plugin<Project> {
         taskConfigurationMap: Map<String, Boolean>
     ) {
         target.tasks.named(BintrayUploadTask.getTASK_NAME(), BintrayUploadTask::class) {
+            dependsOn(project.tasks.named(MavenPublishPlugin.PUBLISH_LOCAL_LIFECYCLE_TASK_NAME))
             doFirst {
                 val publishing = project.extensions.getByType(PublishingExtension::class)
                 // https://github.com/bintray/gradle-bintray-plugin/issues/229
