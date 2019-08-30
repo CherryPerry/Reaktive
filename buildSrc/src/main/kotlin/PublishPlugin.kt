@@ -86,7 +86,6 @@ abstract class PublishPlugin : Plugin<Project> {
         taskConfigurationMap: Map<String, Boolean>
     ) {
         target.tasks.named(BintrayUploadTask.getTASK_NAME(), BintrayUploadTask::class) {
-            dependsOn(project.tasks.named(MavenPublishPlugin.PUBLISH_LOCAL_LIFECYCLE_TASK_NAME))
             doFirst {
                 val publishing = project.extensions.getByType(PublishingExtension::class)
                 // https://github.com/bintray/gradle-bintray-plugin/issues/229
@@ -103,7 +102,11 @@ abstract class PublishPlugin : Plugin<Project> {
                 // https://github.com/bintray/gradle-bintray-plugin/issues/256
                 val publications = publishing.publications
                     .filterIsInstance<MavenPublication>()
-                    .filter { taskConfigurationMap[it.name] == true }
+                    .filter {
+                        val res = taskConfigurationMap[it.name] == true
+                        logger.warn("Artifact '${it.groupId}:${it.artifactId}:${it.version}' from publication '${it.name}' should be published: $res")
+                        res
+                    }
                     .map {
                         logger.warn("Uploading artifact '${it.groupId}:${it.artifactId}:${it.version}' from publication '${it.name}'")
                         it.name
