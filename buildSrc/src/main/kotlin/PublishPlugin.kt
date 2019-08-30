@@ -6,24 +6,27 @@ import org.gradle.api.Project
 import org.gradle.api.publish.PublishingExtension
 import org.gradle.api.publish.maven.MavenPublication
 import org.gradle.api.publish.maven.internal.artifact.FileBasedMavenArtifact
-import org.gradle.api.publish.maven.plugins.MavenPublishPlugin
 import org.gradle.api.publish.maven.tasks.AbstractPublishToMaven
 import org.gradle.kotlin.dsl.apply
-import org.gradle.kotlin.dsl.findByType
 import org.gradle.kotlin.dsl.getByType
 import org.gradle.kotlin.dsl.named
 import org.gradle.kotlin.dsl.withType
-import org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension
-import org.jetbrains.kotlin.gradle.plugin.KotlinTarget
 import org.jetbrains.kotlin.gradle.plugin.mpp.KotlinMultiplatformPlugin
 
 abstract class PublishPlugin : Plugin<Project> {
 
     override fun apply(target: Project) {
         val taskConfigurationMap = createConfigurationMap()
-        setupPublishingForMultiPlatform(target, taskConfigurationMap)
+        createFilteredPublishToMavenLocalTask(target)
+        setupLocalPublishing(target, taskConfigurationMap)
         setupBintrayPublishingInformation(target)
-        setupBintrayTaskForKotlinMultiPlatform(target, taskConfigurationMap)
+        setupBintrayPublishing(target, taskConfigurationMap)
+    }
+
+    private fun createFilteredPublishToMavenLocalTask(target: Project) {
+        target.tasks.register(TASK_FILTERED_PUBLISH_TO_MAVEN_LOCAL) {
+            dependsOn(project.tasks.matching { it is AbstractPublishToMaven && it.enabled })
+        }
     }
 
     private fun createConfigurationMap(): Map<String, Boolean> {
@@ -43,31 +46,20 @@ abstract class PublishPlugin : Plugin<Project> {
         )
     }
 
-    private fun setupPublishingForMultiPlatform(
+    private fun setupLocalPublishing(
         target: Project,
         taskConfigurationMap: Map<String, Boolean>
     ) {
-        target.extensions.findByType(KotlinMultiplatformExtension::class)?.apply {
-            targets.configureEach { configureMavenPublicationTasksForEnvironment(this, taskConfigurationMap) }
-        }
-    }
-
-    private fun configureMavenPublicationTasksForEnvironment(
-        kotlinTarget: KotlinTarget,
-        taskConfigurationMap: Map<String, Boolean>
-    ) {
-        kotlinTarget.mavenPublication {
-            kotlinTarget.project.tasks.withType(AbstractPublishToMaven::class).configureEach {
-                val configuration = publication?.name ?: run {
-                    // Android Plugin does not set publication property after creation of task
-                    logger.warn("Unable to configure task $name in place, using hacks instead")
-                    val configuration =
-                        taskConfigurationMap.keys.find { name.contains(it, ignoreCase = true) }
-                    logger.warn("Found $configuration for $name")
-                    configuration
-                }
-                enabled = taskConfigurationMap[configuration] == true
+        target.project.tasks.withType(AbstractPublishToMaven::class).configureEach {
+            val configuration = publication?.name ?: run {
+                // Android Plugin does not set publication property after creation of task
+                logger.warn("Unable to configure task $name in place, using hacks instead")
+                val configuration = taskConfigurationMap.keys
+                    .find { name.contains(it, ignoreCase = true) }
+                logger.warn("Found $configuration for $name")
+                configuration
             }
+            enabled = taskConfigurationMap[configuration] == true
         }
     }
 
@@ -87,19 +79,20 @@ abstract class PublishPlugin : Plugin<Project> {
         }
     }
 
-    private fun setupBintrayTaskForKotlinMultiPlatform(
+    private fun setupBintrayPublishing(
         target: Project,
         taskConfigurationMap: Map<String, Boolean>
     ) {
         target.tasks.named(BintrayUploadTask.getTASK_NAME(), BintrayUploadTask::class) {
-            dependsOn(project.tasks.named(MavenPublishPlugin.PUBLISH_LOCAL_LIFECYCLE_TASK_NAME))
+            dependsOn(project.tasks.named(TASK_FILTERED_PUBLISH_TO_MAVEN_LOCAL))
             doFirst {
                 val publishing = project.extensions.getByType(PublishingExtension::class)
                 // https://github.com/bintray/gradle-bintray-plugin/issues/229
                 publishing.publications
                     .filterIsInstance<MavenPublication>()
                     .forEach { publication ->
-                        val moduleFile = project.buildDir.resolve("publications/${publication.name}/module.json")
+                        val moduleFile = project.buildDir
+                            .resolve("publications/${publication.name}/module.json")
                         if (moduleFile.exists()) {
                             publication.artifact(object : FileBasedMavenArtifact(moduleFile) {
                                 override fun getDefaultExtension() = "module"
@@ -122,5 +115,9 @@ abstract class PublishPlugin : Plugin<Project> {
                 setPublications(*publications)
             }
         }
+    }
+
+    companion object {
+        const val TASK_FILTERED_PUBLISH_TO_MAVEN_LOCAL = "filteredPublishToMavenLocal"
     }
 }
