@@ -58,7 +58,15 @@ abstract class PublishPlugin : Plugin<Project> {
     ) {
         kotlinTarget.mavenPublication {
             kotlinTarget.project.tasks.withType(AbstractPublishToMaven::class).configureEach {
-                enabled = taskConfigurationMap[publication.name] == true
+                val configuration = publication?.name ?: run {
+                    // Android Plugin does not set publication property after creation of task
+                    logger.warn("Unable to configure task $name in place, using hacks instead")
+                    val configuration =
+                        taskConfigurationMap.keys.find { name.contains(it, ignoreCase = true) }
+                    logger.warn("Found $configuration for $name")
+                    configuration
+                }
+                enabled = taskConfigurationMap[configuration] == true
             }
         }
     }
