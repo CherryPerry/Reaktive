@@ -1,6 +1,14 @@
 name: Build
 
-on: [push, pull_request]
+on:
+  # Skip tag builds, build is triggered by commit anyway
+  push:
+    tags-ignore:
+    - '**'
+  # Build all pull requests
+  pull-request:
+    branches:
+    - '**'
 
 jobs:
   linux-host:
