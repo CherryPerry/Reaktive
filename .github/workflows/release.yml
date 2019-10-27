@@ -7,7 +7,7 @@ on:
 
 jobs:
   linux-host:
-    name: Release Meta, JVM, Android, JS, Linux
+    name: Release on Ubuntu
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -21,7 +21,7 @@ jobs:
       - name: Release Metadata
         run: ./gradlew bintrayUpload -DMP_TARGET=META -Pbintray_user=${{ secrets.BINTRAY_USER }} -Pbintray_key=${{ secrets.BINTRAY_KEY }}
   macos-host:
-    name: Release iOS
+    name: Release on macOS
     runs-on: macOS-latest
     steps:
       - name: Checkout
