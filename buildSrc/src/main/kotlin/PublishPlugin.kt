@@ -17,6 +17,8 @@ abstract class PublishPlugin : Plugin<Project> {
 
     override fun apply(target: Project) {
         val taskConfigurationMap = createConfigurationMap(target)
+        // TODO REMOVE
+        target.logger.error(taskConfigurationMap.toString())
         createFilteredPublishToMavenLocalTask(target)
         setupLocalPublishing(target, taskConfigurationMap)
         setupBintrayPublishingInformation(target)
@@ -33,23 +35,23 @@ abstract class PublishPlugin : Plugin<Project> {
 
     private fun createConfigurationMap(project: Project): Map<String, Boolean> {
         return mapOf(
-            "kotlinMultiplatform" to Target.shouldDefineTarget(project, Target.META),
-            KotlinMultiplatformPlugin.METADATA_TARGET_NAME to Target.shouldDefineTarget(project, Target.META),
-            "jvm" to Target.shouldDefineTarget(project, Target.JVM),
-            JsPlugin.TARGET_NAME_JS to Target.shouldDefineTarget(project, Target.JS),
-            "androidDebug" to Target.shouldDefineTarget(project, Target.JVM),
-            "androidRelease" to Target.shouldDefineTarget(project, Target.JVM),
-            "linuxX64" to Target.shouldDefineTarget(project, Target.LINUX),
-            "linuxArm32Hfp" to Target.shouldDefineTarget(project, Target.LINUX),
-            DarwinPlugin.TARGET_NAME_IOS_ARM32 to Target.shouldDefineTarget(project, Target.IOS),
-            DarwinPlugin.TARGET_NAME_IOS_ARM64 to Target.shouldDefineTarget(project, Target.IOS),
-            DarwinPlugin.TARGET_NAME_IOS_X64 to Target.shouldDefineTarget(project, Target.IOS),
-            DarwinPlugin.TARGET_NAME_WATCHOS_ARM32 to Target.shouldDefineTarget(project, Target.WATCHOS),
-            DarwinPlugin.TARGET_NAME_WATCHOS_ARM64 to Target.shouldDefineTarget(project, Target.WATCHOS),
-            DarwinPlugin.TARGET_NAME_WATCHOS_SIM to Target.shouldDefineTarget(project, Target.WATCHOS),
-            DarwinPlugin.TARGET_NAME_TVOS_ARM64 to Target.shouldDefineTarget(project, Target.TVOS),
-            DarwinPlugin.TARGET_NAME_TVOS_X64 to Target.shouldDefineTarget(project, Target.TVOS),
-            DarwinPlugin.TARGET_NAME_MACOS_X64 to Target.shouldDefineTarget(project, Target.MACOS)
+            "kotlinMultiplatform" to Target.shouldPublishTarget(project, Target.META),
+            KotlinMultiplatformPlugin.METADATA_TARGET_NAME to Target.shouldPublishTarget(project, Target.META),
+            "jvm" to Target.shouldPublishTarget(project, Target.JVM),
+            JsPlugin.TARGET_NAME_JS to Target.shouldPublishTarget(project, Target.JS),
+            "androidDebug" to Target.shouldPublishTarget(project, Target.JVM),
+            "androidRelease" to Target.shouldPublishTarget(project, Target.JVM),
+            "linuxX64" to Target.shouldPublishTarget(project, Target.LINUX),
+            "linuxArm32Hfp" to Target.shouldPublishTarget(project, Target.LINUX),
+            DarwinPlugin.TARGET_NAME_IOS_ARM32 to Target.shouldPublishTarget(project, Target.IOS),
+            DarwinPlugin.TARGET_NAME_IOS_ARM64 to Target.shouldPublishTarget(project, Target.IOS),
+            DarwinPlugin.TARGET_NAME_IOS_X64 to Target.shouldPublishTarget(project, Target.IOS),
+            DarwinPlugin.TARGET_NAME_WATCHOS_ARM32 to Target.shouldPublishTarget(project, Target.WATCHOS),
+            DarwinPlugin.TARGET_NAME_WATCHOS_ARM64 to Target.shouldPublishTarget(project, Target.WATCHOS),
+            DarwinPlugin.TARGET_NAME_WATCHOS_SIM to Target.shouldPublishTarget(project, Target.WATCHOS),
+            DarwinPlugin.TARGET_NAME_TVOS_ARM64 to Target.shouldPublishTarget(project, Target.TVOS),
+            DarwinPlugin.TARGET_NAME_TVOS_X64 to Target.shouldPublishTarget(project, Target.TVOS),
+            DarwinPlugin.TARGET_NAME_MACOS_X64 to Target.shouldPublishTarget(project, Target.MACOS)
         )
     }
 
@@ -76,7 +78,7 @@ abstract class PublishPlugin : Plugin<Project> {
             user = target.findProperty("bintray_user")?.toString()
             key = target.findProperty("bintray_key")?.toString()
             pkg.apply {
-                repo = "maven"
+                repo = "reaktive-test"
                 name = "reaktive"
                 userOrg = "badoo"
                 vcsUrl = "https://github.com/badoo/Reaktive.git"
