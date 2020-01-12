@@ -80,7 +80,7 @@ abstract class PublishPlugin : Plugin<Project> {
             pkg.apply {
                 repo = "maven"
                 name = "reaktive"
-                userOrg = "CherryPerry"
+                userOrg = "cherryperry"
                 vcsUrl = "https://github.com/badoo/Reaktive.git"
                 setLicenses("Apache-2.0")
                 version.name = target.property("reaktive_version")?.toString()
