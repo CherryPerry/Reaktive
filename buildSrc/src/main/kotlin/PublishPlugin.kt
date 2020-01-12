@@ -78,9 +78,9 @@ abstract class PublishPlugin : Plugin<Project> {
             user = target.findProperty("bintray_user")?.toString()
             key = target.findProperty("bintray_key")?.toString()
             pkg.apply {
-                repo = "reaktive-test"
+                repo = "maven"
                 name = "reaktive"
-                userOrg = "badoo"
+                userOrg = "CherryPerry"
                 vcsUrl = "https://github.com/badoo/Reaktive.git"
                 setLicenses("Apache-2.0")
                 version.name = target.property("reaktive_version")?.toString()
